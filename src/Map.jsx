@@ -1,42 +1,62 @@
+// Map.jsx
+import React, { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Icon } from 'leaflet';
 import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
-import { useEffect, useRef } from 'react';
-import { useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet-routing-machine';
+import RoutingMachine from './RoutingMachine';
 
-const RoutingMachine = ({lat, lng}) => {
-    const map = useMap();
-    const routingControlRef = useRef(null);
 
-    useEffect(() => {
-        if (!map) return;
+const MapComponent = () => {
+  const [destination, setDestination] = useState({
+    lat: -6.340524556872198,
+    lng: 107.11309999756057
+  });
 
-        
-    if (!routingControlRef.current) {
-      const control = L.Routing.control({
-        waypoints: [
-          L.latLng(-6.340524556872198, 107.11309999756057),
-          L.latLng(lat, lng),
-        ],
-        routeWhileDragging: false,
-        addWaypoints: false,
-        createMarker: () => null,
-        show: false,
-      }).addTo(map);
-
-      routingControlRef.current = control;
-    } else {
-      routingControlRef.current.setWaypoints([
-        L.latLng(-6.340524556872198, 107.11309999756057),
-        L.latLng(lat, lng),
-      ]);
+  const markers = [
+    {
+      geocode: [-6.340524556872198, 107.11309999756057],
+      popUp: "Nasi Kebuli Mutiara"
+    },
+    {
+      geocode: [-6.19675, 107.13989],
+      popUp: "Dummy 1"
+    },
+    {
+      geocode: [-6.34910, 107],
+      popUp: "Dummy 2"
     }
+  ];
 
-    return () => {
-      };
-    }, [map, lat, lng]);
-    return null;
-  };
+  const customIcon = new Icon({
+    iconUrl: require("./img/6157.jpg"),
+    iconSize: [38, 38]
+  });
 
-export default RoutingMachine;
+  return (
+    <MapContainer center={[-6.340524556872198, 107.11309999756057]} zoom={13} style={{ height: '100vh', width: '100%' }}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+      />
+      {markers.map((marker, index) => (
+        <Marker
+          key={index}
+          position={marker.geocode}
+          icon={customIcon}
+          eventHandlers={{
+            click: () => {
+              const [lat, lng] = marker.geocode;
+              if (destination.lat !== lat || destination.lng !== lng) {
+                setDestination({ lat, lng });
+              }
+            }
+          }}>
+          <Popup>{marker.popUp}</Popup>
+        </Marker>
+      ))}
+      <RoutingMachine lat={destination.lat} lng={destination.lng} />
+    </MapContainer>
+  );
+};
+
+export default MapComponent;
