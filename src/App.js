@@ -3,7 +3,7 @@ import MapComponent from './Map';
 import MapPicker from './MapPicker';
 
 function App() {
-  return <MapPicker />;
+  return <MapComponent />;
 }
 
 export default App;

@@ -22,7 +22,6 @@ const RoutingMachine = ({lat, lng}) => {
         routeWhileDragging: false,
         addWaypoints: false,
         createMarker: () => null,
-        show: false,
       }).addTo(map);
 
       routingControlRef.current = control;
