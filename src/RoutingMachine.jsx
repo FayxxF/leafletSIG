@@ -11,6 +11,10 @@ const RoutingMachine = ({lat, lng}) => {
 
     useEffect(() => {
         if (!map) return;
+        if(lat === 0 && lng === 0){
+          routingControlRef.current._clearLines();
+          return;
+        }
 
         
     if (!routingControlRef.current) {
