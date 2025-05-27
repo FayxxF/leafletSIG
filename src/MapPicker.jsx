@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for missing marker icons in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -18,38 +17,28 @@ const LocationMarker = ({ onLocationSelect }) => {
   const [position, setPosition] = useState(null);
 
   useMapEvents({
+
     click(e) {
       const coords = e.latlng;
       setPosition(coords);
-      onLocationSelect(coords); // Send to parent
+      onLocationSelect(coords); // Pass to parent
     },
   });
 
-  return position === null ? null : <Marker position={position} />;
+  return position ? <Marker position={position} /> : null;
 };
 
-const MapPicker = () => {
-  const handleLocationSelect = async (coords) => {
-    console.log('Selected coordinates:', coords);
-
-    try {
-      await fetch('http://localhost:5000/api/save-coordinates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(coords),
-      });
-      alert('Coordinates sent to backend!');
-    } catch (err) {
-      console.error(err);
-      alert('Failed to send coordinates');
-    }
+const MapPicker = ({ onSelect }) => {
+  const handleLocationSelect = (coords) => {
+    onSelect({
+      latitude: coords.lat,
+      longitude: coords.lng,
+    });
   };
 
   return (
-    <MapContainer center={[51.505, -0.09]} zoom={13} style={{ height: '500px' }}>
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <MapContainer center={[-6.340524556872198, 107.11309999756057]} zoom={13} style={{ height: '50vh', width: '100%' }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <LocationMarker onLocationSelect={handleLocationSelect} />
     </MapContainer>
   );
